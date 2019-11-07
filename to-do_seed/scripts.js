@@ -35,7 +35,16 @@ class ToDoClass {
 `;
     }
 
-    
+    toggleTaskStatus (index) {
+        this.tasks[index].isComplete = !this.tasks[index].isComplete;
+        this.loadTasks();
+    }
+
+    deleteTask (event, taskIndex) {
+        event.preventDefault();
+        this.tasks.splice(taskIndex, 1);
+        this.loadTasks();
+    }
 }
 
 let toDo;   // Initiate the variable.

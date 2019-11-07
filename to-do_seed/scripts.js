@@ -1,16 +1,22 @@
 class ToDoClass {
     constructor() {
-        this.tasks = [
-            {task: "Go to the dentist", isComplete: false},
-            {task: "Do Gardening", isComplete: true},
-            {task: "Renew Library Account", isComplete: false}
-        ];
+        this.tasks = JSON.parse(localStorage.getItem("TASKS"));
+        if(!this.tasks) {
+            this.tasks = [
+                {task: "Incomplete Task", isComplete: false},
+                {task: "Completed Task", isComplete: true}
+            ];
+        }
+
         this.loadTasks();
+        this.addEventListeners();
     }
 
     loadTasks() {
         let tasksHtml = this.tasks.reduce((html, task, index) => html += this.generateTaskHtml(task, index), "");
         document.getElementById("taskList").innerHTML = tasksHtml;
+        localStorage.setItem('TASKS', JSON.stringify(this.tasks));
+        localStorage.clear();
     }
 
     generateTaskHtml (task, index) {
@@ -64,6 +70,15 @@ class ToDoClass {
             this.tasks.push(newTask);
             this.loadTasks();
         }
+    }
+
+    addEventListeners() {
+        document.getElementById("addTask").addEventListener("keypress", event => {
+            if(event.keyCode === 13) {
+                this.addTask (event.target.value);
+                event.target.value = "";
+            }
+        });
     }
 }
 

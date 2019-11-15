@@ -24,7 +24,7 @@ class ToDoList {
         return `
            
                 <div class="col-md-10 col-xs-10 col-lg-10 col-sm-10 task-text"> 
-                    <p class="editable" id="clickable" onclick="toDoList.selectedList.tasks.loadTasks(); document.getElementById('selList').innerHTML = '${list.list}'; toDoList.selectedList = toDoList.lists[${this.findList(list.list)}]">${list.list}</p>
+                    <p class="editable" id="clickable" onclick="document.getElementById('selList').innerHTML = '${list.list}'; toDoList.selectedList = toDoList.lists[${this.findList(list.list)}]; toDoList.selectedList.tasks.loadTasks();">${list.list}</p>
                 </div>
                 <div class="col-md-1 col-xs-1 col-lg-1 col-sm-1 delete-icon-area">
                     <a class="" href="/" onClick="toDoList.deleteList(event, ${index})">

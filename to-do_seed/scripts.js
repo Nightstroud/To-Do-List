@@ -58,6 +58,7 @@ class ToDoList {
 
     deleteList (event, taskIndex) {
         event.preventDefault();
+        document.getElementById('selList').innerHTML = 'No Selection';
         this.lists.splice(taskIndex, 1);
         this.loadLists();
     }

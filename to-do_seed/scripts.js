@@ -1,7 +1,6 @@
 class ToDoList {
     constructor() {
-        this.ListAmount = 0;
-        // this.lists = JSON.parse(localStorage.getItem("LISTS"));
+        this.lists = JSON.parse(localStorage.getItem("LISTS"));
         if(!this.lists) {
             this.lists = [
                 {list: "First List", tasks: new ToDoClass, num: 0},
@@ -9,6 +8,15 @@ class ToDoList {
                 {list: "Third List", tasks: new ToDoClass, num: 2}
             ];
         }
+        else {
+            for (let i = 0; i < this.lists.length; i++) {
+                this.lists[i].tasks = new ToDoClass();
+                this.lists[i].tasks.num = this.lists[i].num;
+                this.lists[i].tasks.tasks = JSON.parse(localStorage.getItem("LISTS"))[i].tasks.tasks;
+                localStorage.setItem('LISTS', JSON.stringify(this.lists));
+            }
+        }
+        this.ListAmount = this.lists.length - 1;
         this.selectedList = this.lists[0];
         this.loadLists();
         this.addEventListeners();
@@ -17,15 +25,13 @@ class ToDoList {
     loadLists() {
         let tasksHtml = this.lists.reduce((html, list, index) => html += this.generateTaskHtml(list, index), "");
         document.getElementById("navigationBar").innerHTML = tasksHtml;
-        // localStorage.setItem('LISTS', JSON.stringify(this.lists));
-        // localStorage.clear();
-    }
+        this.store()}
 
     generateTaskHtml (list, index) {
         return `
            
                 <div class="col-md-10 col-xs-10 col-lg-10 col-sm-10 task-text"> 
-                    <p class="editable" id="clickable" onclick="document.getElementById('selList').innerHTML = '${list.list}'; toDoList.selectedList.tasks.loadTasks();toDoList.selectedList = toDoList.lists[${this.findList(list.list)}]; ">${list.list}</p>
+                    <p class="editable" id="clickable" onclick="document.getElementById('selList').innerHTML = '${list.list}'; toDoList.selectedList = toDoList.lists[${this.findList(list.list)}]; toDoList.selectedList.tasks.loadTasks();">${list.list}</p>
                 </div>
                 <div class="col-md-1 col-xs-1 col-lg-1 col-sm-1 delete-icon-area">
                     <a class="" href="/" onClick="toDoList.deleteList(event, ${index})">
@@ -34,6 +40,10 @@ class ToDoList {
                 </div>
             </div>
 `;
+    }
+
+    store() {
+        localStorage.setItem('LISTS', JSON.stringify(this.lists));
     }
 
     findList (value) {
@@ -62,12 +72,10 @@ class ToDoList {
         let newTask = {
             list, "tasks": new ToDoClass(), num, "selected": false
         };
-        let parentDiv = document.getElementById("addList").parentElement;
         if (list === "") {
-            parentDiv.classList.add('has-error');
         } else {
-            parentDiv.classList.remove('has-error');
             this.lists.push(newTask);
+            toDoList.store();
             this.loadLists();
         }
     }
@@ -82,20 +90,23 @@ class ToDoList {
     }
 
     ClearCompleted() {
-        let x = this.selectedList.tasks.tasks;
-        for (let i = 0; i < x.length; i++) {
-            if (x[i].isComplete === true) {
-                this.selectedList.tasks.deleteTask(null, i);
+        for (let v = 0; v < toDoList.lists.length; v++) {
+            for (let i = 0; i < toDoList.lists[v].tasks.tasks.length; i++) {
+                if (toDoList.lists[v].tasks.tasks[i].isComplete === true) {
+                    toDoList.lists[v].tasks.deleteTask(null, i);
+                }
             }
         }
+        document.getElementById('selList').innerHTML = 'No Selection';
         this.checkCompleted();
     }
 
     checkCompleted() {
-        let x = this.selectedList.tasks.tasks;
-        for (let i = 0; i < x.length; i++) {
-            if (x[i].isComplete === true) {
-                this.ClearCompleted();
+        for (let v = 0; v < toDoList.lists.length; v++) {
+            for (let i = 0; i < toDoList.lists[v].tasks.tasks.length; i++) {
+                if (toDoList.lists[v].tasks.tasks[i].isComplete === true) {
+                    this.ClearCompleted();
+                }
             }
         }
     }
@@ -106,23 +117,14 @@ class ToDoList {
 
 class ToDoClass {
     constructor() {
-        // this.tasknum = toDoList.selectedList.num;
-        // this.tasks = JSON.parse(localStorage.getItem(`TASKS${this.tasknum}`));
-        if(!this.tasks) {
-            this.tasks = [
-                {task: "First Task", isComplete: false},
-                {task: "Second Task", isComplete: false}
-            ];
-        }
-
-        this.loadTasks();
+        this.num = 0;
+        this.tasks = [];
         this.addEventListeners();
     }
 
     loadTasks() {
         let tasksHtml = this.tasks.reduce((html, task, index) => html += this.generateTaskHtml(task, index), "");
         document.getElementById("taskList").innerHTML = tasksHtml;
-        // localStorage.setItem(`TASKS${this.tasknum}`, JSON.stringify(this.tasks));
     }
 
     generateTaskHtml (task, index) {
@@ -149,6 +151,7 @@ class ToDoClass {
 
     toggleTaskStatus (index) {
         this.tasks[index].isComplete = !this.tasks[index].isComplete;
+        toDoList.store();
         this.loadTasks();
     }
 
@@ -158,6 +161,7 @@ class ToDoClass {
         }
         this.tasks.splice(taskIndex, 1);
         this.loadTasks();
+        toDoList.store();
     }
 
     addTaskClick() {
@@ -170,14 +174,12 @@ class ToDoClass {
         let newTask = {
             task, isComplete: false,
         };
-        let parentDiv = document.getElementById("addTask").parentElement;
         if (task === "") {
-            parentDiv.classList.add('has-error');
         } else {
-            parentDiv.classList.remove('has-error');
             toDoList.selectedList.tasks.tasks.push(newTask);
             toDoList.selectedList.tasks.loadTasks();
         }
+        toDoList.store();
     }
 
     addEventListeners() {

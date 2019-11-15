@@ -4,8 +4,9 @@ class ToDoList {
         // this.lists = JSON.parse(localStorage.getItem("LISTS"));
         if(!this.lists) {
             this.lists = [
-                {list: "First List", tasks: new ToDoClass(), num: this.ListAmount++},
-
+                {list: "First List", tasks: new ToDoClass, num: 0},
+                {list: "Second List", tasks: new ToDoClass, num: 1},
+                {list: "Third List", tasks: new ToDoClass, num: 2}
             ];
         }
         this.selectedList = this.lists[0];
@@ -109,8 +110,8 @@ class ToDoClass {
         // this.tasks = JSON.parse(localStorage.getItem(`TASKS${this.tasknum}`));
         if(!this.tasks) {
             this.tasks = [
-                {task: "Incomplete Task", isComplete: false},
-                {task: "Completed Task", isComplete: true}
+                {task: "First Task", isComplete: false},
+                {task: "Second Task", isComplete: false}
             ];
         }
 
